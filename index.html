@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Monster Swarm Adventurer Forge</title>
+    <script type="module" crossorigin src="/monster-swarm/assets/index-C7qnhddS.js"></script>
+    <link rel="stylesheet" crossorigin href="/monster-swarm/assets/index-D4b3uKIw.css">
+  </head>
+  <body>
+    <div id="app">
+      <main class="shell">
+        <section class="stage-card">
+          <div class="brand-row">
+            <div>
+              <p class="eyebrow">Monster Swarm</p>
+              <h1>Adventurer Forge</h1>
+            </div>
+            <button id="randomize" class="primary-button" type="button">Roll New Adventurer</button>
+          </div>
+          <div id="canvas-wrap" aria-label="3D character preview"></div>
+          <div class="hint-row">
+            <span>Drag to inspect</span>
+            <span>Scroll to zoom</span>
+            <span>Choose gear at right</span>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="hero-card">
+            <label for="hero-name">Hero name</label>
+            <input id="hero-name" value="Leo Ironleaf" maxlength="24" />
+            <p id="hero-title" class="hero-title">Wolf Guard Champion with Longbow</p>
+          </div>
+
+          <div class="photo-card">
+            <div>
+              <strong>Portrait tint</strong>
+              <p>Optional: extract campaign portrait colors for skin and hair.</p>
+            </div>
+            <label class="file-button">
+Import portrait
+              <input id="photo-upload" type="file" accept="image/*" />
+            </label>
+          </div>
+
+          <div id="selectors" class="selectors"></div>
+
+          <div class="stat-card">
+            <h2>Character Sheet</h2>
+            <div id="stats" class="stats"></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </body>
+</html>
