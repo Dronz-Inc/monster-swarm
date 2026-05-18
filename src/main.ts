@@ -70,7 +70,7 @@ const partnerGroup = new THREE.Group();
 const sparkleGroup = new THREE.Group();
 scene.add(world);
 world.add(hero, partnerGroup, sparkleGroup);
-hero.scale.setScalar(1.12);
+hero.scale.setScalar(1.28);
 hero.add(gear);
 
 scene.add(new THREE.HemisphereLight(0xcfbf9e, 0x17100c, 1.35));
@@ -129,11 +129,45 @@ function makeDungeonSet() {
 }
 makeDungeonSet();
 
+function makePortalSet() {
+  const portal = new THREE.Group();
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0xff7a22, transparent: true, opacity: 0.42, depthWrite: false });
+  const hotMat = new THREE.MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.34, depthWrite: false });
+  const core = new THREE.Mesh(new THREE.PlaneGeometry(2.65, 3.55), glowMat);
+  core.position.set(0, 0.35, -2.16);
+  const inner = new THREE.Mesh(new THREE.PlaneGeometry(1.65, 2.65), hotMat);
+  inner.position.set(0, 0.3, -2.12);
+  portal.add(core, inner);
+  const hot = mat(0xff7a22, 0.35, 0.02);
+  const ember = mat(0xffc052, 0.32, 0.02);
+  for (let i = 0; i < 11; i++) {
+    const h = 1.1 + i * 0.12;
+    const columnL = new THREE.Mesh(new THREE.BoxGeometry(0.22, h, 0.12), i % 2 ? hot : ember);
+    columnL.position.set(-0.98 - i * 0.07, -0.75 + h / 2, -2.0 - i * 0.006);
+    const columnR = columnL.clone();
+    columnR.position.x *= -1;
+    portal.add(columnL, columnR);
+  }
+  for (let i = 0; i < 9; i++) {
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.18, 0.1), i % 2 ? hot : ember);
+    cap.position.set(-1.35 + i * 0.34, 2.08 + Math.sin(i) * 0.06, -2.02);
+    portal.add(cap);
+  }
+  const portalLight = new THREE.PointLight(0xff7a22, 13, 11);
+  portalLight.position.set(0, 0.38, -1.35);
+  const floorLight = new THREE.PointLight(0xff3d1a, 4.5, 6);
+  floorLight.position.set(0, -1.05, 0.4);
+  world.add(portalLight, floorLight, portal);
+}
+makePortalSet();
+
 const body = cube('body', [1.18, 1.45, 0.62], [0, 0.08, 0], 0x3e5571, 0.09);
 const head = cube('head', [0.9, 0.86, 0.9], [0, 1.35, 0], 0xb77b55);
 const hair = cube('hair', [0.96, 0.28, 0.96], [0, 1.86, 0], 0x3a2316);
 const leftArm = cube('left-arm', [0.38, 1.12, 0.42], [-0.86, 0.03, 0], 0xb77b55);
+leftArm.rotation.z = 0.12;
 const rightArm = cube('right-arm', [0.38, 1.12, 0.42], [0.86, 0.03, 0], 0xb77b55);
+rightArm.rotation.z = -0.54;
 const leftLeg = cube('left-leg', [0.44, 1.05, 0.44], [-0.3, -1.13, 0], 0x27211c);
 const rightLeg = cube('right-leg', [0.44, 1.05, 0.44], [0.3, -1.13, 0], 0x27211c);
 hero.add(body, head, hair, leftArm, rightArm, leftLeg, rightLeg);
@@ -193,8 +227,12 @@ function refreshGear() {
     gear.add(cube('axe-handle', [0.13, 1.18, 0.13], [1.22, 0.06, 0.18], melee.color));
     gear.add(cube('axe-head', [0.5, 0.42, 0.13], [1.34, 0.58, 0.18], melee.accent, 0.25));
   } else {
-    gear.add(cube('sword-handle', [0.12, 0.42, 0.12], [1.16, -0.35, 0.22], melee.color));
-    gear.add(cube('sword-blade', [0.18, 1.08, 0.08], [1.16, 0.33, 0.22], melee.accent, 0.35));
+    const sword = new THREE.Group();
+    sword.add(cube('sword-handle', [0.13, 0.42, 0.13], [1.08, 0.22, 0.24], melee.color));
+    sword.add(cube('sword-blade', [0.2, 1.18, 0.08], [1.08, 0.96, 0.24], melee.accent, 0.35));
+    sword.add(cube('sword-guard', [0.48, 0.09, 0.09], [1.08, 0.48, 0.24], melee.color, 0.16));
+    sword.rotation.z = -0.45;
+    gear.add(sword);
   }
 
   if (ranged.name.includes('Bow')) {
@@ -218,9 +256,32 @@ function refreshGear() {
   makePartner(); makeSparkles(armor.accent, artifact.accent); updateUiText();
 }
 
+function makeAlly(kind: 'rogue' | 'mage', x: number, color: number, accent: number) {
+  const g = new THREE.Group();
+  g.scale.setScalar(0.56);
+  g.position.set(x, -0.82, -0.18);
+  g.add(cube(`${kind}-body`, [0.76, 1.05, 0.44], [0, 0.0, 0], color, 0.06));
+  g.add(cube(`${kind}-head`, [0.58, 0.56, 0.58], [0, 0.82, 0], 0xa36f52, 0.02));
+  g.add(cube(`${kind}-hood`, [0.66, 0.24, 0.66], [0, 1.14, 0], accent, 0.04));
+  if (kind === 'rogue') {
+    g.add(cube('rogue-dagger', [0.08, 0.72, 0.06], [0.55, 0.12, 0.24], 0xd7d2c6, 0.26));
+  } else {
+    g.add(cube('mage-staff', [0.08, 1.28, 0.08], [-0.52, 0.16, 0.22], 0x5b4128, 0.08));
+    gem(g, accent, [-0.52, 0.9, 0.22], 0.7);
+  }
+  world.add(g);
+  return g;
+}
+const allyRogue = makeAlly('rogue', -1.55, 0x252338, 0x6f5a8b);
+allyRogue.scale.setScalar(0.7);
+allyRogue.position.z = 0.42;
+const allyMage = makeAlly('mage', 1.55, 0x2b4050, 0x7dcfb6);
+allyMage.scale.setScalar(0.7);
+allyMage.position.z = 0.36;
+
 function makePartner() {
   const p = options.partner[state.partner];
-  partnerGroup.position.set(-1.85, -0.84, 0.75);
+  partnerGroup.position.set(-1.45, -0.98, 0.92);
   partnerGroup.add(cube('partner-body', [0.72, 0.55, 0.56], [0, 0, 0], p.color, 0.08));
   partnerGroup.add(cube('partner-head', [0.48, 0.45, 0.45], [0.48, 0.22, 0.02], p.color, 0.08));
   if (p.name.includes('Dragon')) {
@@ -303,7 +364,7 @@ function averageImageColors(file: File) {
 
 document.querySelector('#randomize')!.addEventListener('click', randomize);
 document.querySelector<HTMLInputElement>('#photo-upload')!.addEventListener('change', (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) averageImageColors(file); });
-let dragging = false, lastX = 0, targetRot = -0.42, zoom = 6.6;
+let dragging = false, lastX = 0, targetRot = -0.36, zoom = 5.55;
 wrap.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; wrap.setPointerCapture(e.pointerId); });
 wrap.addEventListener('pointermove', (e) => { if (dragging) { targetRot += (e.clientX - lastX) * 0.012; lastX = e.clientX; } });
 wrap.addEventListener('pointerup', () => dragging = false);
@@ -315,7 +376,8 @@ function animate(t = 0) {
   hero.rotation.y = THREE.MathUtils.lerp(hero.rotation.y, targetRot, 0.085); camera.position.z = THREE.MathUtils.lerp(camera.position.z, zoom, 0.08);
   camera.lookAt(0, 0.05, 0);
   hero.position.y = Math.sin(t * 0.004) * 0.055; partnerGroup.position.y = -0.84 + Math.sin(t * 0.005 + 1.3) * 0.05;
-  rightArm.rotation.z = -0.12 + Math.sin(t * 0.006) * 0.08; leftArm.rotation.z = 0.12 + Math.sin(t * 0.006 + Math.PI) * 0.08;
+  rightArm.rotation.z = -0.54 + Math.sin(t * 0.006) * 0.06; leftArm.rotation.z = 0.12 + Math.sin(t * 0.006 + Math.PI) * 0.05;
+  allyRogue.rotation.y = -0.28 + Math.sin(t * 0.002) * 0.06; allyMage.rotation.y = 0.28 + Math.sin(t * 0.002 + 1.4) * 0.06;
   sparkleGroup.children.forEach((child, i) => { child.rotation.y += 0.02 + i * 0.0005; child.position.y += Math.sin(t * 0.002 + child.userData.float) * 0.0018; });
   renderer.render(scene, camera);
 }
