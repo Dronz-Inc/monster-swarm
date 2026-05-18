@@ -7,44 +7,43 @@ type Option = { name: string; emoji: string; color: number; accent: number; powe
 
 const options: Record<Slot, Option[]> = {
   armor: [
-    { name: 'Emerald Scout Armor', emoji: '💚', color: 0x22c55e, accent: 0x86efac, power: { speed: 4, team: 2 }, title: 'Emerald Scout' },
-    { name: 'Diamond Knight Armor', emoji: '💎', color: 0x38bdf8, accent: 0xbae6fd, power: { might: 4, team: 1 }, title: 'Diamond Knight' },
-    { name: 'Lava Guardian Armor', emoji: '🔥', color: 0xef4444, accent: 0xf97316, power: { might: 5, magic: 2 }, title: 'Lava Guardian' },
-    { name: 'Shadow Ninja Armor', emoji: '🌙', color: 0x312e81, accent: 0xa78bfa, power: { speed: 5, magic: 1 }, title: 'Shadow Ninja' },
-    { name: 'Royal Bee Armor', emoji: '🐝', color: 0xfacc15, accent: 0xfef08a, power: { team: 5, speed: 2 }, title: 'Bee Captain' },
+    { name: 'Wolf Guard Mail', emoji: '◆', color: 0x4f5f4a, accent: 0xd8b26a, power: { might: 3, team: 3 }, title: 'Wolf Guard' },
+    { name: 'Champion Plate', emoji: '◈', color: 0x3e5571, accent: 0xd9d2bc, power: { might: 5, team: 1 }, title: 'Champion' },
+    { name: 'Ember Scale Armor', emoji: '✦', color: 0x6b2f22, accent: 0xff9d3d, power: { might: 4, magic: 3 }, title: 'Ember Warden' },
+    { name: 'Shadow Ranger Leathers', emoji: '◇', color: 0x242136, accent: 0x8f7aa8, power: { speed: 5, magic: 1 }, title: 'Shadow Ranger' },
+    { name: 'Highland Battle Kilt', emoji: '⬟', color: 0x35523b, accent: 0xb03b2e, power: { speed: 2, might: 4 }, title: 'Highland Hero' },
   ],
   melee: [
-    { name: 'Sparkle Sword', emoji: '⚔️', color: 0xe0f2fe, accent: 0x38bdf8, power: { might: 3, speed: 3 }, title: 'Sword' },
-    { name: 'Thunder Hammer', emoji: '🔨', color: 0x64748b, accent: 0xfacc15, power: { might: 5, magic: 2 }, title: 'Hammer' },
-    { name: 'Twin Fox Daggers', emoji: '🗡️', color: 0xf97316, accent: 0xfed7aa, power: { speed: 6 }, title: 'Daggers' },
-    { name: 'Crystal Axe', emoji: '🪓', color: 0x14b8a6, accent: 0x99f6e4, power: { might: 4, magic: 2 }, title: 'Axe' },
+    { name: 'Iron Longsword', emoji: '⚔', color: 0x6f5a3b, accent: 0xd7d2c6, power: { might: 4, speed: 2 }, title: 'Longsword' },
+    { name: 'Storm Warhammer', emoji: '✚', color: 0x4d5055, accent: 0x6fb3c7, power: { might: 6, magic: 1 }, title: 'Warhammer' },
+    { name: 'Rogue Twin Daggers', emoji: '†', color: 0x3a2a22, accent: 0xd5b07c, power: { speed: 6 }, title: 'Daggers' },
+    { name: 'Runed Battle Axe', emoji: 'ᛉ', color: 0x5b4128, accent: 0xa8b49a, power: { might: 5, magic: 2 }, title: 'Battle Axe' },
   ],
   ranged: [
-    { name: 'Thunder Bow', emoji: '🏹', color: 0x92400e, accent: 0xfacc15, power: { speed: 2, magic: 3 }, title: 'Thunder Bow' },
-    { name: 'Snowball Crossbow', emoji: '❄️', color: 0x7dd3fc, accent: 0xffffff, power: { speed: 3, team: 2 }, title: 'Crossbow' },
-    { name: 'Star Wand', emoji: '🪄', color: 0x8b5cf6, accent: 0xf0abfc, power: { magic: 6 }, title: 'Star Wand' },
-    { name: 'Slime Launcher', emoji: '🟢', color: 0x16a34a, accent: 0xbbf7d0, power: { team: 3, magic: 3 }, title: 'Slime Launcher' },
+    { name: 'Hunter Longbow', emoji: '➳', color: 0x5a321e, accent: 0xd8b26a, power: { speed: 3, team: 2 }, title: 'Longbow' },
+    { name: 'Heavy Crossbow', emoji: '⊹', color: 0x3c3130, accent: 0xb7b1a3, power: { might: 3, speed: 2 }, title: 'Crossbow' },
+    { name: 'Elder Oak Staff', emoji: '✶', color: 0x4d3826, accent: 0x7dcfb6, power: { magic: 6 }, title: 'Elder Staff' },
+    { name: 'Soul Lantern Caster', emoji: '☽', color: 0x1f3f48, accent: 0x7dd3fc, power: { team: 2, magic: 4 }, title: 'Soul Caster' },
   ],
   partner: [
-    { name: 'Wolf Buddy', emoji: '🐺', color: 0x94a3b8, accent: 0xe2e8f0, power: { team: 5, might: 1 }, title: 'Wolf' },
-    { name: 'Baby Dragon', emoji: '🐉', color: 0x22c55e, accent: 0xf97316, power: { magic: 4, might: 2 }, title: 'Dragon' },
-    { name: 'Robot Pal', emoji: '🤖', color: 0x60a5fa, accent: 0xfacc15, power: { team: 3, magic: 3 }, title: 'Robot' },
-    { name: 'Tiny Golem', emoji: '🪨', color: 0x78716c, accent: 0xd6d3d1, power: { might: 4, team: 2 }, title: 'Golem' },
+    { name: 'Armored Wolf', emoji: '♞', color: 0x6d716d, accent: 0xc9b27f, power: { team: 5, might: 1 }, title: 'Wolf-Bonded' },
+    { name: 'Hatchling Drake', emoji: '♜', color: 0x31513a, accent: 0xc4603d, power: { magic: 4, might: 2 }, title: 'Drake-Keeper' },
+    { name: 'Iron Golem Squire', emoji: '♖', color: 0x7a766d, accent: 0xcabf9a, power: { team: 4, might: 2 }, title: 'Golem-Sworn' },
+    { name: 'Cave Bat Familiar', emoji: '✧', color: 0x2e2632, accent: 0x9a8fb0, power: { speed: 3, magic: 3 }, title: 'Bat-Friend' },
   ],
   artifact: [
-    { name: 'Firework Rocket', emoji: '🎆', color: 0xef4444, accent: 0xfacc15, power: { magic: 3, might: 3 }, title: 'Firework' },
-    { name: 'Healing Totem', emoji: '💖', color: 0xec4899, accent: 0xfbcfe8, power: { team: 6 }, title: 'Healer' },
-    { name: 'Speed Mushroom', emoji: '🍄', color: 0xdc2626, accent: 0xffffff, power: { speed: 6 }, title: 'Speedy' },
-    { name: 'Soul Lantern', emoji: '🏮', color: 0x06b6d4, accent: 0xa5f3fc, power: { magic: 5, team: 1 }, title: 'Soul' },
+    { name: 'Firework Quiver', emoji: '✹', color: 0x8e2f25, accent: 0xffc857, power: { magic: 3, might: 3 }, title: 'Firework' },
+    { name: 'Totem of Regeneration', emoji: '✥', color: 0x6b4a2c, accent: 0x79b06d, power: { team: 6 }, title: 'Totem-Bearer' },
+    { name: 'Boots of Swiftness', emoji: '↟', color: 0x4f392a, accent: 0xd7b46a, power: { speed: 6 }, title: 'Swift' },
+    { name: 'Soul Amulet', emoji: '☼', color: 0x123848, accent: 0x7dd3fc, power: { magic: 5, team: 1 }, title: 'Soulbound' },
   ],
   look: [
-    { name: 'Sunny Smile', emoji: '😄', color: 0xf2b680, accent: 0x6b3f24, power: { team: 1 }, title: 'Brave' },
-    { name: 'Cool Explorer', emoji: '😎', color: 0xc98b5f, accent: 0x27150d, power: { speed: 1 }, title: 'Cool' },
-    { name: 'Freckle Hero', emoji: '🙂', color: 0xffc18a, accent: 0x8b4513, power: { magic: 1 }, title: 'Freckle' },
-    { name: 'Moon Mystic', emoji: '🧙', color: 0x9f7aea, accent: 0x111827, power: { magic: 2 }, title: 'Mystic' },
+    { name: 'Village Champion', emoji: 'I', color: 0xb77b55, accent: 0x3a2316, power: { team: 1 }, title: 'Brave' },
+    { name: 'Desert Wanderer', emoji: 'II', color: 0x9b684d, accent: 0x21160f, power: { speed: 1 }, title: 'Wanderer' },
+    { name: 'Forest Warden', emoji: 'III', color: 0xc28d68, accent: 0x58351d, power: { magic: 1 }, title: 'Warden' },
+    { name: 'Arcane Adept', emoji: 'IV', color: 0xa77fbd, accent: 0x191322, power: { magic: 2 }, title: 'Adept' },
   ],
 };
-
 const state: Record<Slot, number> = { armor: 1, melee: 0, ranged: 0, partner: 0, artifact: 0, look: 0 };
 let photoSkin: number | null = null;
 let photoHair: number | null = null;
@@ -56,9 +55,9 @@ const heroTitle = document.querySelector<HTMLParagraphElement>('#hero-title')!;
 const heroName = document.querySelector<HTMLInputElement>('#hero-name')!;
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x101936, 13, 32);
+scene.fog = new THREE.Fog(0x120e0b, 8, 24);
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(3.9, 3.25, 6.15);
+camera.position.set(4.1, 3.15, 6.6);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
@@ -74,13 +73,13 @@ world.add(hero, partnerGroup, sparkleGroup);
 hero.scale.setScalar(1.12);
 hero.add(gear);
 
-scene.add(new THREE.HemisphereLight(0xbdeeff, 0x242047, 2.2));
+scene.add(new THREE.HemisphereLight(0xcfbf9e, 0x17100c, 1.35));
 const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-sun.position.set(5, 9, 4);
+sun.position.set(4, 8, 5);
 sun.castShadow = true;
 scene.add(sun);
-const rim = new THREE.PointLight(0x9f7aea, 3.8, 12);
-rim.position.set(-4, 2.3, -2);
+const rim = new THREE.PointLight(0xff8c32, 5.2, 12);
+rim.position.set(-3.7, 2.1, -2.4);
 scene.add(rim);
 
 function mat(color: number, roughness = 0.55, metalness = 0.06) { return new THREE.MeshStandardMaterial({ color, roughness, metalness }); }
@@ -101,28 +100,52 @@ function gem(parent: THREE.Group, color: number, pos: [number, number, number], 
 }
 function darken(color: number, factor: number) { const c = new THREE.Color(color); c.multiplyScalar(factor); return c.getHex(); }
 
-const floor = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.7, 0.42, 8), mat(0x25335f, 0.68, 0.08));
+const floor = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.7, 0.42, 8), mat(0x2f2821, 0.74, 0.02));
 floor.position.y = -1.42;
 floor.receiveShadow = true;
 world.add(floor);
 
-const body = cube('body', [1.12, 1.52, 0.55], [0, 0.05, 0], 0x38bdf8, 0.05);
-const head = cube('head', [0.9, 0.9, 0.9], [0, 1.38, 0], 0xf2b680);
-const hair = cube('hair', [0.96, 0.24, 0.96], [0, 1.92, 0], 0x6b3f24);
-const leftArm = cube('left-arm', [0.34, 1.18, 0.38], [-0.83, 0.05, 0], 0xf2b680);
-const rightArm = cube('right-arm', [0.34, 1.18, 0.38], [0.83, 0.05, 0], 0xf2b680);
-const leftLeg = cube('left-leg', [0.42, 1.15, 0.42], [-0.28, -1.18, 0], 0x1d4ed8);
-const rightLeg = cube('right-leg', [0.42, 1.15, 0.42], [0.28, -1.18, 0], 0x1d4ed8);
+function makeDungeonSet() {
+  const back = new THREE.Group();
+  const stone = mat(0x3a332b, 0.82, 0.02);
+  for (let i = 0; i < 9; i++) {
+    const brick = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.28, 0.22), stone);
+    brick.position.set(-3 + (i % 5) * 1.45 + (Math.floor(i / 5) * 0.35), -1.07 + Math.floor(i / 5) * 0.3, -2.45);
+    brick.castShadow = true;
+    brick.receiveShadow = true;
+    back.add(brick);
+  }
+  const leftPillar = cube('left-pillar', [0.42, 2.55, 0.48], [-2.72, -0.18, -1.95], 0x40382f, 0.01);
+  const rightPillar = cube('right-pillar', [0.42, 2.55, 0.48], [2.72, -0.18, -1.95], 0x40382f, 0.01);
+  const bannerL = cube('banner-left', [0.42, 1.15, 0.04], [-2.72, 0.55, -1.68], 0x6b2f22, 0.02);
+  const bannerR = cube('banner-right', [0.42, 1.15, 0.04], [2.72, 0.55, -1.68], 0x253c56, 0.02);
+  back.add(leftPillar, rightPillar, bannerL, bannerR);
+  world.add(back);
+  const torchA = new THREE.PointLight(0xff8a2a, 2.8, 5);
+  torchA.position.set(-2.55, 0.92, -1.35);
+  const torchB = torchA.clone();
+  torchB.position.set(2.55, 0.92, -1.35);
+  world.add(torchA, torchB);
+}
+makeDungeonSet();
+
+const body = cube('body', [1.18, 1.45, 0.62], [0, 0.08, 0], 0x3e5571, 0.09);
+const head = cube('head', [0.9, 0.86, 0.9], [0, 1.35, 0], 0xb77b55);
+const hair = cube('hair', [0.96, 0.28, 0.96], [0, 1.86, 0], 0x3a2316);
+const leftArm = cube('left-arm', [0.38, 1.12, 0.42], [-0.86, 0.03, 0], 0xb77b55);
+const rightArm = cube('right-arm', [0.38, 1.12, 0.42], [0.86, 0.03, 0], 0xb77b55);
+const leftLeg = cube('left-leg', [0.44, 1.05, 0.44], [-0.3, -1.13, 0], 0x27211c);
+const rightLeg = cube('right-leg', [0.44, 1.05, 0.44], [0.3, -1.13, 0], 0x27211c);
 hero.add(body, head, hair, leftArm, rightArm, leftLeg, rightLeg);
 
 const face = new THREE.Group();
 const eyeGeo = new THREE.BoxGeometry(0.12, 0.14, 0.035);
 const le = new THREE.Mesh(eyeGeo, mat(0x111827)); le.position.set(-0.18, 1.47, 0.47);
 const re = new THREE.Mesh(eyeGeo, mat(0x111827)); re.position.set(0.18, 1.47, 0.47);
-const smile = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.055, 0.035), mat(0xef4444)); smile.position.set(0, 1.2, 0.47);
-const grinL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.055, 0.035), mat(0xef4444)); grinL.position.set(-0.18, 1.24, 0.47); grinL.rotation.z = 0.55;
-const grinR = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.055, 0.035), mat(0xef4444)); grinR.position.set(0.18, 1.24, 0.47); grinR.rotation.z = -0.55;
-face.add(le, re, smile, grinL, grinR);
+const browL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.045, 0.035), mat(0x2a1911)); browL.position.set(-0.18, 1.58, 0.47); browL.rotation.z = -0.18;
+const browR = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.045, 0.035), mat(0x2a1911)); browR.position.set(0.18, 1.58, 0.47); browR.rotation.z = 0.18;
+const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.045, 0.035), mat(0x4a1f18)); mouth.position.set(0, 1.18, 0.47);
+face.add(le, re, browL, browR, mouth);
 hero.add(face);
 
 function refreshGear() {
@@ -141,13 +164,24 @@ function refreshGear() {
   leftLeg.material = mat(darken(armor.color, 0.45));
   rightLeg.material = mat(darken(armor.color, 0.45));
 
-  gear.add(cube('helmet', [1.05, 0.28, 1.05], [0, 1.91, 0], armor.accent, 0.12));
-  gear.add(cube('left-pauldron', [0.36, 0.3, 0.62], [-0.72, 0.64, 0], armor.accent, 0.14));
-  gear.add(cube('right-pauldron', [0.36, 0.3, 0.62], [0.72, 0.64, 0], armor.accent, 0.14));
-  gear.add(cube('belt', [1.2, 0.16, 0.62], [0, -0.42, 0], darken(armor.accent, 0.65), 0.1));
-  gear.add(cube('left-boot', [0.48, 0.18, 0.48], [-0.28, -1.84, 0.03], armor.accent, 0.1));
-  gear.add(cube('right-boot', [0.48, 0.18, 0.48], [0.28, -1.84, 0.03], armor.accent, 0.1));
-  gem(gear, armor.accent, [0, 0.36, 0.35], 1.1);
+  gear.add(cube('cloak', [1.25, 1.85, 0.1], [0, -0.02, -0.43], darken(armor.color, 0.55), 0.02));
+  gear.add(cube('helmet', [1.05, 0.3, 1.05], [0, 1.88, 0], armor.accent, 0.12));
+  gear.add(cube('helmet-side-l', [0.16, 0.42, 0.2], [-0.52, 1.63, 0.12], darken(armor.accent, 0.75), 0.14));
+  gear.add(cube('helmet-side-r', [0.16, 0.42, 0.2], [0.52, 1.63, 0.12], darken(armor.accent, 0.75), 0.14));
+  gear.add(cube('brow-guard', [1.0, 0.16, 0.22], [0, 1.64, 0.47], darken(armor.accent, 0.75), 0.18));
+  gear.add(cube('left-pauldron', [0.46, 0.34, 0.68], [-0.76, 0.66, 0], armor.accent, 0.18));
+  gear.add(cube('right-pauldron', [0.46, 0.34, 0.68], [0.76, 0.66, 0], armor.accent, 0.18));
+  gear.add(cube('chest-plate', [1.0, 0.7, 0.09], [0, 0.24, 0.36], darken(armor.accent, 0.9), 0.2));
+  gear.add(cube('belt', [1.22, 0.18, 0.66], [0, -0.43, 0], darken(armor.accent, 0.55), 0.12));
+  gear.add(cube('tunic-left', [0.46, 0.5, 0.08], [-0.25, -0.76, 0.35], darken(armor.color, 0.62), 0.04));
+  gear.add(cube('tunic-right', [0.46, 0.5, 0.08], [0.25, -0.76, 0.35], darken(armor.color, 0.62), 0.04));
+  gear.add(cube('left-bracer', [0.42, 0.24, 0.46], [-0.86, -0.22, 0], armor.accent, 0.12));
+  gear.add(cube('right-bracer', [0.42, 0.24, 0.46], [0.86, -0.22, 0], armor.accent, 0.12));
+  gear.add(cube('shield-face', [0.12, 0.72, 0.6], [-1.14, 0.18, 0.28], darken(armor.color, 0.58), 0.12));
+  gear.add(cube('shield-boss', [0.14, 0.24, 0.24], [-1.08, 0.18, 0.29], armor.accent, 0.18));
+  gear.add(cube('left-boot', [0.5, 0.22, 0.5], [-0.3, -1.76, 0.03], armor.accent, 0.1));
+  gear.add(cube('right-boot', [0.5, 0.22, 0.5], [0.3, -1.76, 0.03], armor.accent, 0.1));
+  gem(gear, armor.accent, [0, 0.48, 0.43], 0.52);
 
   if (melee.name.includes('Hammer')) {
     gear.add(cube('hammer-handle', [0.13, 1.25, 0.13], [1.24, 0.02, 0.15], melee.color));
@@ -213,7 +247,7 @@ function makeSparkles(a: number, b: number) {
 }
 
 function buildSelectors() {
-  const labels: Record<Slot, string> = { armor: 'Armor', melee: 'Close Weapon', ranged: 'Long Weapon', partner: 'Partner', artifact: 'Power', look: 'Look' };
+  const labels: Record<Slot, string> = { armor: 'Armor Set', melee: 'Melee', ranged: 'Ranged', partner: 'Companion', artifact: 'Artifact', look: 'Origin' };
   (Object.keys(options) as Slot[]).forEach((slot) => {
     const box = document.createElement('section');
     box.className = 'selector';
@@ -232,8 +266,8 @@ function buildSelectors() {
 function updateUiText() {
   (Object.keys(options) as Slot[]).forEach((slot) => {
     const opt = options[slot][state[slot]];
-    document.querySelector(`[data-value="${slot}"]`)!.textContent = `${opt.emoji} ${opt.name}`;
-    document.querySelector<HTMLButtonElement>(`.equip[data-slot="${slot}"]`)!.textContent = `${opt.emoji} ${opt.name}`;
+    document.querySelector(`[data-value="${slot}"]`)!.textContent = opt.emoji;
+    document.querySelector<HTMLButtonElement>(`.equip[data-slot="${slot}"]`)!.innerHTML = `<span class="sigil">${opt.emoji}</span><span>${opt.name}</span>`;
   });
   heroTitle.textContent = `${options.partner[state.partner].title} ${options.armor[state.armor].title} with ${options.ranged[state.ranged].title}`;
   updateStats();
@@ -245,7 +279,7 @@ function updateStats() {
 }
 function randomize() {
   (Object.keys(options) as Slot[]).forEach((slot) => state[slot] = Math.floor(Math.random() * options[slot].length));
-  heroName.value = ['Leo the Brave', 'Captain Spark', 'Dungeon Buddy', 'Wolf Hero', 'Robot Knight', 'Thunder Leo'][Math.floor(Math.random() * 6)];
+  heroName.value = ['Leo Ironleaf', 'Thorn of Oakvale', 'Garrick Wolfguard', 'Mira Emberhand', 'Rowan Deepdelver', 'Sir Thunderbrook'][Math.floor(Math.random() * 6)];
   refreshGear();
 }
 function averageImageColors(file: File) {
@@ -269,7 +303,7 @@ function averageImageColors(file: File) {
 
 document.querySelector('#randomize')!.addEventListener('click', randomize);
 document.querySelector<HTMLInputElement>('#photo-upload')!.addEventListener('change', (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) averageImageColors(file); });
-let dragging = false, lastX = 0, targetRot = -0.28, zoom = 6.15;
+let dragging = false, lastX = 0, targetRot = -0.42, zoom = 6.6;
 wrap.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; wrap.setPointerCapture(e.pointerId); });
 wrap.addEventListener('pointermove', (e) => { if (dragging) { targetRot += (e.clientX - lastX) * 0.012; lastX = e.clientX; } });
 wrap.addEventListener('pointerup', () => dragging = false);
