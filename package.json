@@ -1,0 +1,22 @@
+{
+  "name": "monster-swarm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minecraft Dungeons-inspired co-op action game prototype",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "npm run build"
+  },
+  "dependencies": {
+    "@vitejs/plugin-basic-ssl": "latest",
+    "three": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/three": "^0.184.1",
+    "typescript": "latest"
+  }
+}

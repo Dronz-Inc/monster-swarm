@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Monster Swarm Hero Forge</title>
+  </head>
+  <body>
+    <div id="app">
+      <main class="shell">
+        <section class="stage-card">
+          <div class="brand-row">
+            <div>
+              <p class="eyebrow">Monster Swarm</p>
+              <h1>Hero Forge</h1>
+            </div>
+            <button id="randomize" class="primary-button" type="button">🎲 Random Hero</button>
+          </div>
+          <div id="canvas-wrap" aria-label="3D character preview"></div>
+          <div class="hint-row">
+            <span>👆 Drag to rotate</span>
+            <span>🔍 Pinch/scroll to zoom</span>
+            <span>✨ Tap gear to transform</span>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="hero-card">
+            <label for="hero-name">Hero name</label>
+            <input id="hero-name" value="Leo the Brave" maxlength="24" />
+            <p id="hero-title" class="hero-title">Wolf Knight with Thunder Bow</p>
+          </div>
+
+          <div class="photo-card">
+            <div>
+              <strong>Make it look like me</strong>
+              <p>Upload a photo and the hero borrows its skin/hair colors.</p>
+            </div>
+            <label class="file-button">
+              📸 Upload photo
+              <input id="photo-upload" type="file" accept="image/*" />
+            </label>
+          </div>
+
+          <div id="selectors" class="selectors"></div>
+
+          <div class="stat-card">
+            <h2>Power mix</h2>
+            <div id="stats" class="stats"></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
