@@ -44,7 +44,7 @@ const options: Record<Slot, Option[]> = {
     { name: 'Arcane Adept', emoji: 'IV', color: 0xa77fbd, accent: 0x191322, power: { magic: 2 }, title: 'Adept' },
   ],
 };
-const state: Record<Slot, number> = { armor: 1, melee: 0, ranged: 0, partner: 0, artifact: 0, look: 0 };
+const state: Record<Slot, number> = { armor: 1, melee: 0, ranged: 2, partner: 0, artifact: 0, look: 0 };
 let photoSkin: number | null = null;
 let photoHair: number | null = null;
 
@@ -57,7 +57,7 @@ const heroName = document.querySelector<HTMLInputElement>('#hero-name')!;
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x120e0b, 8, 24);
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(4.1, 3.15, 6.6);
+camera.position.set(4.55, 3.35, 7.15);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
@@ -70,7 +70,7 @@ const partnerGroup = new THREE.Group();
 const sparkleGroup = new THREE.Group();
 scene.add(world);
 world.add(hero, partnerGroup, sparkleGroup);
-hero.scale.setScalar(1.28);
+hero.scale.setScalar(0.92);
 hero.add(gear);
 
 scene.add(new THREE.HemisphereLight(0xcfbf9e, 0x17100c, 1.35));
@@ -99,6 +99,28 @@ function gem(parent: THREE.Group, color: number, pos: [number, number, number], 
   return g;
 }
 function darken(color: number, factor: number) { const c = new THREE.Color(color); c.multiplyScalar(factor); return c.getHex(); }
+function lighten(color: number, factor: number) { const c = new THREE.Color(color); c.lerp(new THREE.Color(0xffffff), factor); return c.getHex(); }
+function trim(parent: THREE.Group, name: string, size: [number, number, number], pos: [number, number, number], color: number, metalness = 0.1) {
+  const piece = cube(name, size, pos, color, metalness);
+  parent.add(piece);
+  return piece;
+}
+function rune(parent: THREE.Group, color: number, x: number, y: number, z: number) {
+  const r = cube('rune', [0.08, 0.18, 0.035], [x, y, z], color, 0.22);
+  r.rotation.z = 0.8;
+  parent.add(r);
+  return r;
+}
+function makeStrap(parent: THREE.Group, x: number, y: number, z: number, color = 0x2a1a12) {
+  trim(parent, 'leather-strap-a', [0.92, 0.08, 0.04], [x, y, z], color, 0.03).rotation.z = 0.58;
+  trim(parent, 'leather-strap-b', [0.92, 0.08, 0.04], [x, y, z], color, 0.03).rotation.z = -0.58;
+}
+function makeBlade(parent: THREE.Group, name: string, x: number, y: number, z: number, color: number, accent: number, tall = 1.1) {
+  trim(parent, `${name}-grip`, [0.13, 0.42, 0.13], [x, y, z], color, 0.12);
+  trim(parent, `${name}-guard`, [0.5, 0.09, 0.1], [x, y + 0.26, z], color, 0.18);
+  trim(parent, `${name}-blade`, [0.2, tall, 0.08], [x, y + 0.26 + tall / 2, z], accent, 0.42);
+  trim(parent, `${name}-edge`, [0.04, tall * 0.92, 0.09], [x + 0.12, y + 0.32 + tall / 2, z], lighten(accent, 0.35), 0.48);
+}
 
 const floor = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.7, 0.42, 8), mat(0x2f2821, 0.74, 0.02));
 floor.position.y = -1.42;
@@ -190,113 +212,263 @@ function refreshGear() {
   const artifact = options.artifact[state.artifact];
   const look = options.look[state.look];
 
-  body.material = mat(armor.color, 0.42, 0.16);
-  head.material = mat(photoSkin ?? look.color);
-  leftArm.material = mat(photoSkin ?? look.color);
-  rightArm.material = mat(photoSkin ?? look.color);
-  hair.material = mat(photoHair ?? look.accent);
-  leftLeg.material = mat(darken(armor.color, 0.45));
-  rightLeg.material = mat(darken(armor.color, 0.45));
+  body.material = mat(armor.color, 0.48, 0.14);
+  head.material = mat(photoSkin ?? look.color, 0.58, 0.02);
+  leftArm.material = mat(photoSkin ?? look.color, 0.58, 0.02);
+  rightArm.material = mat(photoSkin ?? look.color, 0.58, 0.02);
+  hair.material = mat(photoHair ?? look.accent, 0.7, 0.02);
+  leftLeg.material = mat(darken(armor.color, 0.42), 0.62, 0.04);
+  rightLeg.material = mat(darken(armor.color, 0.42), 0.62, 0.04);
 
-  gear.add(cube('cloak', [1.25, 1.85, 0.1], [0, -0.02, -0.43], darken(armor.color, 0.55), 0.02));
-  gear.add(cube('helmet', [1.05, 0.3, 1.05], [0, 1.88, 0], armor.accent, 0.12));
-  gear.add(cube('helmet-side-l', [0.16, 0.42, 0.2], [-0.52, 1.63, 0.12], darken(armor.accent, 0.75), 0.14));
-  gear.add(cube('helmet-side-r', [0.16, 0.42, 0.2], [0.52, 1.63, 0.12], darken(armor.accent, 0.75), 0.14));
-  gear.add(cube('brow-guard', [1.0, 0.16, 0.22], [0, 1.64, 0.47], darken(armor.accent, 0.75), 0.18));
-  gear.add(cube('left-pauldron', [0.46, 0.34, 0.68], [-0.76, 0.66, 0], armor.accent, 0.18));
-  gear.add(cube('right-pauldron', [0.46, 0.34, 0.68], [0.76, 0.66, 0], armor.accent, 0.18));
-  gear.add(cube('chest-plate', [1.0, 0.7, 0.09], [0, 0.24, 0.36], darken(armor.accent, 0.9), 0.2));
-  gear.add(cube('belt', [1.22, 0.18, 0.66], [0, -0.43, 0], darken(armor.accent, 0.55), 0.12));
-  gear.add(cube('tunic-left', [0.46, 0.5, 0.08], [-0.25, -0.76, 0.35], darken(armor.color, 0.62), 0.04));
-  gear.add(cube('tunic-right', [0.46, 0.5, 0.08], [0.25, -0.76, 0.35], darken(armor.color, 0.62), 0.04));
-  gear.add(cube('left-bracer', [0.42, 0.24, 0.46], [-0.86, -0.22, 0], armor.accent, 0.12));
-  gear.add(cube('right-bracer', [0.42, 0.24, 0.46], [0.86, -0.22, 0], armor.accent, 0.12));
-  gear.add(cube('shield-face', [0.12, 0.72, 0.6], [-1.14, 0.18, 0.28], darken(armor.color, 0.58), 0.12));
-  gear.add(cube('shield-boss', [0.14, 0.24, 0.24], [-1.08, 0.18, 0.29], armor.accent, 0.18));
-  gear.add(cube('left-boot', [0.5, 0.22, 0.5], [-0.3, -1.76, 0.03], armor.accent, 0.1));
-  gear.add(cube('right-boot', [0.5, 0.22, 0.5], [0.3, -1.76, 0.03], armor.accent, 0.1));
-  gem(gear, armor.accent, [0, 0.48, 0.43], 0.52);
+  trim(gear, 'cloak', [1.3, 1.9, 0.1], [0, -0.05, -0.43], darken(armor.color, 0.5), 0.02);
+  trim(gear, 'cloak-hem', [1.18, 0.08, 0.12], [0, -0.98, -0.39], armor.accent, 0.08);
+  trim(gear, 'helmet', [1.05, 0.3, 1.05], [0, 1.88, 0], armor.accent, 0.14);
+  trim(gear, 'helmet-crown', [0.72, 0.12, 1.08], [0, 2.1, 0], lighten(armor.accent, 0.08), 0.18);
+  trim(gear, 'helmet-side-l', [0.16, 0.42, 0.2], [-0.52, 1.63, 0.12], darken(armor.accent, 0.72), 0.14);
+  trim(gear, 'helmet-side-r', [0.16, 0.42, 0.2], [0.52, 1.63, 0.12], darken(armor.accent, 0.72), 0.14);
+  trim(gear, 'brow-guard', [1.0, 0.16, 0.22], [0, 1.64, 0.47], darken(armor.accent, 0.7), 0.2);
+  trim(gear, 'left-pauldron', [0.5, 0.34, 0.7], [-0.78, 0.66, 0], armor.accent, 0.2);
+  trim(gear, 'right-pauldron', [0.5, 0.34, 0.7], [0.78, 0.66, 0], armor.accent, 0.2);
+  trim(gear, 'chest-plate', [1.02, 0.72, 0.09], [0, 0.24, 0.37], darken(armor.accent, 0.86), 0.22);
+  trim(gear, 'chest-highlight', [0.88, 0.08, 0.11], [0, 0.55, 0.43], lighten(armor.accent, 0.12), 0.24);
+  for (const x of [-0.36, -0.12, 0.12, 0.36]) {
+    trim(gear, 'armor-rivet', [0.07, 0.07, 0.055], [x, 0.49, 0.47], lighten(armor.accent, 0.22), 0.28);
+    trim(gear, 'armor-rivet-low', [0.06, 0.06, 0.055], [x * 0.82, 0.05, 0.47], darken(armor.accent, 0.7), 0.2);
+  }
+  trim(gear, 'plate-seam-left', [0.06, 0.62, 0.045], [-0.31, 0.22, 0.46], darken(armor.color, 0.5), 0.06);
+  trim(gear, 'plate-seam-right', [0.06, 0.62, 0.045], [0.31, 0.22, 0.46], darken(armor.color, 0.5), 0.06);
+  trim(gear, 'belt', [1.22, 0.18, 0.66], [0, -0.43, 0], darken(armor.accent, 0.52), 0.12);
+  trim(gear, 'belt-buckle', [0.22, 0.22, 0.11], [0, -0.42, 0.39], lighten(armor.accent, 0.18), 0.26);
+  trim(gear, 'tunic-left', [0.46, 0.5, 0.08], [-0.25, -0.76, 0.35], darken(armor.color, 0.62), 0.04);
+  trim(gear, 'tunic-right', [0.46, 0.5, 0.08], [0.25, -0.76, 0.35], darken(armor.color, 0.62), 0.04);
+  trim(gear, 'left-bracer', [0.42, 0.24, 0.46], [-0.86, -0.22, 0], armor.accent, 0.14);
+  trim(gear, 'right-bracer', [0.42, 0.24, 0.46], [0.86, -0.22, 0], armor.accent, 0.14);
+  trim(gear, 'left-boot', [0.5, 0.22, 0.5], [-0.3, -1.76, 0.03], armor.accent, 0.12);
+  trim(gear, 'right-boot', [0.5, 0.22, 0.5], [0.3, -1.76, 0.03], armor.accent, 0.12);
+  rune(gear, lighten(armor.accent, 0.2), -0.23, 0.28, 0.43);
+  rune(gear, lighten(armor.accent, 0.2), 0.23, 0.28, 0.43);
+  makeStrap(gear, 0, 0.04, 0.44);
 
+  const meleeGroup = new THREE.Group();
+  const rangedIsPrimary = ranged.name.includes('Crossbow') || ranged.name.includes('Staff');
+  meleeGroup.position.set(rangedIsPrimary ? 0.95 : 0.72, rangedIsPrimary ? -0.82 : 0.04, rangedIsPrimary ? -0.5 : 0.22);
+  meleeGroup.rotation.z = rangedIsPrimary ? -1.08 : -0.5;
+  meleeGroup.scale.setScalar(rangedIsPrimary ? 0.5 : 1);
   if (melee.name.includes('Hammer')) {
-    gear.add(cube('hammer-handle', [0.13, 1.25, 0.13], [1.24, 0.02, 0.15], melee.color));
-    gear.add(cube('hammer-head', [0.62, 0.32, 0.34], [1.24, 0.7, 0.15], melee.accent, 0.2));
+    trim(meleeGroup, 'hammer-grip', [0.14, 1.28, 0.14], [0.12, 0.36, 0], melee.color, 0.1);
+    trim(meleeGroup, 'hammer-core', [0.66, 0.34, 0.34], [0.12, 1.13, 0], melee.accent, 0.28);
+    trim(meleeGroup, 'hammer-cap-l', [0.16, 0.42, 0.42], [-0.29, 1.13, 0], lighten(melee.accent, 0.16), 0.32);
+    trim(meleeGroup, 'hammer-cap-r', [0.16, 0.42, 0.42], [0.53, 1.13, 0], darken(melee.accent, 0.8), 0.26);
   } else if (melee.name.includes('Daggers')) {
-    gear.add(cube('dagger-a', [0.12, 0.78, 0.08], [1.07, 0.12, 0.24], melee.accent, 0.28));
-    gear.add(cube('dagger-b', [0.12, 0.78, 0.08], [-1.07, 0.12, 0.24], melee.accent, 0.28));
+    makeBlade(meleeGroup, 'dagger-right', 0.18, 0.26, 0.08, melee.color, melee.accent, 0.62);
+    const offhand = new THREE.Group();
+    makeBlade(offhand, 'dagger-left', -0.42, -0.26, 0.1, melee.color, melee.accent, 0.58);
+    offhand.rotation.z = 1.35;
+    gear.add(offhand);
   } else if (melee.name.includes('Axe')) {
-    gear.add(cube('axe-handle', [0.13, 1.18, 0.13], [1.22, 0.06, 0.18], melee.color));
-    gear.add(cube('axe-head', [0.5, 0.42, 0.13], [1.34, 0.58, 0.18], melee.accent, 0.25));
+    trim(meleeGroup, 'axe-grip', [0.14, 1.28, 0.14], [0.12, 0.42, 0], melee.color, 0.08);
+    trim(meleeGroup, 'axe-head', [0.58, 0.52, 0.12], [0.34, 1.16, 0], melee.accent, 0.32);
+    trim(meleeGroup, 'axe-beard', [0.22, 0.42, 0.12], [0.08, 0.96, 0], lighten(melee.accent, 0.16), 0.32);
   } else {
-    const sword = new THREE.Group();
-    sword.add(cube('sword-handle', [0.13, 0.42, 0.13], [1.08, 0.22, 0.24], melee.color));
-    sword.add(cube('sword-blade', [0.2, 1.18, 0.08], [1.08, 0.96, 0.24], melee.accent, 0.35));
-    sword.add(cube('sword-guard', [0.48, 0.09, 0.09], [1.08, 0.48, 0.24], melee.color, 0.16));
-    sword.rotation.z = -0.45;
-    gear.add(sword);
+    makeBlade(meleeGroup, 'longsword', 0.1, 0.24, 0.02, melee.color, melee.accent, 1.12);
   }
+  gear.add(meleeGroup);
+  trim(gear, 'right-hand-grip', [0.24, 0.2, 0.24], [rangedIsPrimary ? 0.52 : 0.88, rangedIsPrimary ? 0.2 : 0.14, rangedIsPrimary ? 0.86 : 0.34], photoSkin ?? look.color, 0.02);
 
+  const rangedGroup = new THREE.Group();
+  rangedGroup.position.set(-0.72, 0.18, -0.04);
   if (ranged.name.includes('Bow')) {
-    const bow = new THREE.Group();
-    const bowTop = cube('bow-top', [0.12, 0.82, 0.08], [-1.2, 0.36, 0.2], ranged.color); bowTop.rotation.z = -0.35;
-    const bowBottom = cube('bow-bottom', [0.12, 0.82, 0.08], [-1.2, -0.36, 0.2], ranged.color); bowBottom.rotation.z = 0.35;
-    bow.add(bowTop, bowBottom);
-    bow.add(cube('bow-grip', [0.15, 0.3, 0.12], [-1.16, 0.02, 0.22], ranged.accent));
-    bow.add(cube('bow-string', [0.035, 1.42, 0.035], [-0.96, 0.02, 0.24], 0xf8fafc));
-    bow.add(cube('arrow', [0.75, 0.055, 0.055], [-1.16, 0.02, 0.42], ranged.accent, 0.16));
-    gear.add(bow);
-  } else if (ranged.name.includes('Wand')) {
-    gear.add(cube('wand', [0.12, 1.1, 0.12], [-1.13, 0.08, 0.2], ranged.color, 0.18));
-    gem(gear, ranged.accent, [-1.13, 0.73, 0.2], 1.3);
+    rangedGroup.position.set(-1.05, 0.12, 0.78);
+    rangedGroup.rotation.z = 0.02;
+    const bowMat = mat(ranged.color, 0.5, 0.08);
+    const bowCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.18, 0.98, 0.0),
+      new THREE.Vector3(-0.42, 0.56, 0.0),
+      new THREE.Vector3(-0.5, 0.0, 0.0),
+      new THREE.Vector3(-0.42, -0.56, 0.0),
+      new THREE.Vector3(-0.18, -0.98, 0.0),
+    ]);
+    const bowMesh = new THREE.Mesh(new THREE.TubeGeometry(bowCurve, 18, 0.045, 8, false), bowMat);
+    bowMesh.castShadow = true;
+    bowMesh.receiveShadow = true;
+    rangedGroup.add(bowMesh);
+    const upperTip = trim(rangedGroup, 'bow-tip-top', [0.2, 0.08, 0.1], [-0.13, 1.0, 0], ranged.accent, 0.12); upperTip.rotation.z = -0.35;
+    const lowerTip = trim(rangedGroup, 'bow-tip-bottom', [0.2, 0.08, 0.1], [-0.13, -1.0, 0], ranged.accent, 0.12); lowerTip.rotation.z = 0.35;
+    trim(rangedGroup, 'bow-grip', [0.18, 0.36, 0.14], [-0.5, 0.0, 0.05], ranged.accent, 0.14);
+    const stringMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+    const string = new THREE.Mesh(new THREE.BoxGeometry(0.035, 1.92, 0.035), stringMat);
+    string.position.set(0.03, 0.0, 0.03);
+    rangedGroup.add(string);
+    trim(rangedGroup, 'nocked-arrow-shaft', [1.16, 0.055, 0.055], [-0.42, 0.02, 0.28], 0xd8b26a, 0.12);
+    trim(rangedGroup, 'nocked-arrow-head', [0.17, 0.14, 0.1], [0.24, 0.02, 0.28], lighten(ranged.accent, 0.2), 0.22);
+    trim(rangedGroup, 'arrow-fletch-a', [0.13, 0.06, 0.1], [-0.98, 0.1, 0.28], ranged.accent, 0.08).rotation.z = 0.5;
+    trim(rangedGroup, 'arrow-fletch-b', [0.13, 0.06, 0.1], [-0.98, -0.06, 0.28], ranged.accent, 0.08).rotation.z = -0.5;
+  } else if (ranged.name.includes('Crossbow')) {
+    rangedGroup.position.set(-0.04, 0.28, 0.92);
+    rangedGroup.rotation.z = -0.04;
+    const wood = ranged.color;
+    const steel = ranged.accent;
+    trim(rangedGroup, 'crossbow-main-stock', [1.28, 0.2, 0.24], [0.08, 0.0, 0.16], wood, 0.12);
+    trim(rangedGroup, 'crossbow-butt', [0.24, 0.34, 0.24], [0.78, -0.02, 0.15], darken(wood, 0.65), 0.08);
+    trim(rangedGroup, 'crossbow-front-block', [0.28, 0.34, 0.28], [-0.58, 0.0, 0.2], darken(wood, 0.72), 0.12);
+    trim(rangedGroup, 'crossbow-upper-limb', [0.22, 0.78, 0.12], [-0.68, 0.44, 0.24], steel, 0.22).rotation.z = 0.18;
+    trim(rangedGroup, 'crossbow-lower-limb', [0.22, 0.78, 0.12], [-0.68, -0.44, 0.24], steel, 0.22).rotation.z = -0.18;
+    trim(rangedGroup, 'crossbow-tip-top', [0.34, 0.14, 0.13], [-0.78, 0.86, 0.24], lighten(steel, 0.18), 0.24);
+    trim(rangedGroup, 'crossbow-tip-bottom', [0.34, 0.14, 0.13], [-0.78, -0.86, 0.24], lighten(steel, 0.18), 0.24);
+    trim(rangedGroup, 'crossbow-string-visible', [0.035, 1.72, 0.04], [-0.36, 0.0, 0.36], 0xf8fafc, 0.0);
+    trim(rangedGroup, 'crossbow-top-rail', [1.52, 0.07, 0.1], [0.06, 0.11, 0.42], lighten(wood, 0.15), 0.16);
+    trim(rangedGroup, 'crossbow-bolt-shaft', [1.62, 0.07, 0.07], [0.02, 0.16, 0.58], 0xd8b26a, 0.2);
+    trim(rangedGroup, 'crossbow-bolt-head', [0.2, 0.16, 0.12], [0.94, 0.16, 0.58], 0xd7d2c6, 0.28);
+    trim(rangedGroup, 'crossbow-fletch-a', [0.16, 0.07, 0.1], [-0.78, 0.25, 0.58], steel, 0.12).rotation.z = 0.5;
+    trim(rangedGroup, 'crossbow-fletch-b', [0.16, 0.07, 0.1], [-0.78, 0.06, 0.58], steel, 0.12).rotation.z = -0.5;
+    trim(rangedGroup, 'crossbow-trigger', [0.14, 0.28, 0.12], [0.24, -0.23, 0.34], 0x1a100b, 0.08);
+    trim(gear, 'left-crossbow-hand', [0.28, 0.22, 0.26], [-0.48, 0.22, 0.94], photoSkin ?? look.color, 0.02);
+    trim(gear, 'right-crossbow-hand', [0.28, 0.22, 0.26], [0.38, 0.18, 0.94], photoSkin ?? look.color, 0.02);
+  } else if (ranged.name.includes('Staff')) {
+    rangedGroup.position.set(0.86, 0.1, 1.06);
+    rangedGroup.rotation.z = -0.08;
+    trim(rangedGroup, 'held-staff-shaft', [0.13, 2.18, 0.13], [0.0, 0.08, 0.0], ranged.color, 0.1);
+    trim(rangedGroup, 'held-staff-highlight', [0.045, 2.0, 0.04], [0.055, 0.08, 0.075], lighten(ranged.color, 0.22), 0.03);
+    trim(rangedGroup, 'held-staff-butt-cap', [0.24, 0.14, 0.16], [0.0, -1.02, 0.0], darken(ranged.accent, 0.72), 0.12);
+    for (const y of [-0.42, -0.18, 0.08, 0.34]) trim(rangedGroup, 'staff-leather-wrap', [0.22, 0.075, 0.16], [0.0, y, 0.02], 0x5a3322, 0.08);
+    trim(rangedGroup, 'elder-oak-crown', [0.42, 0.24, 0.2], [0.0, 1.23, 0.0], darken(ranged.color, 0.66), 0.18);
+    trim(rangedGroup, 'staff-branch-left', [0.09, 0.58, 0.09], [-0.27, 1.18, 0.0], ranged.color, 0.08).rotation.z = -0.62;
+    trim(rangedGroup, 'staff-branch-right', [0.09, 0.58, 0.09], [0.27, 1.18, 0.0], ranged.color, 0.08).rotation.z = 0.62;
+    gem(rangedGroup, ranged.accent, [0.0, 1.5, 0.08], 1.35);
+    trim(rangedGroup, 'magic-bolt-1', [0.38, 0.08, 0.08], [0.42, 1.48, 0.12], lighten(ranged.accent, 0.28), 0.2).rotation.z = 0.22;
+    trim(rangedGroup, 'magic-bolt-2', [0.32, 0.07, 0.07], [-0.38, 1.42, 0.12], lighten(ranged.accent, 0.18), 0.2).rotation.z = -0.3;
+    trim(gear, 'staff-main-hand-back', [0.34, 0.24, 0.16], [0.8, 0.12, 0.98], darken(photoSkin ?? look.color, 0.78), 0.04);
+    trim(gear, 'staff-main-hand-front', [0.34, 0.24, 0.14], [0.93, 0.12, 1.18], photoSkin ?? look.color, 0.04);
+    trim(gear, 'staff-support-hand-back', [0.28, 0.22, 0.15], [0.62, -0.38, 0.94], darken(photoSkin ?? look.color, 0.78), 0.04);
+    trim(gear, 'staff-support-hand-front', [0.28, 0.22, 0.13], [0.74, -0.38, 1.14], photoSkin ?? look.color, 0.04);
+    const staffGlow = new THREE.PointLight(ranged.accent, 2.8, 4.8);
+    staffGlow.position.set(0.0, 1.5, 0.28);
+    rangedGroup.add(staffGlow);
   } else {
-    gear.add(cube('ranged-base', [0.88, 0.24, 0.24], [-1.12, 0.16, 0.2], ranged.color, 0.12));
-    gear.add(cube('ranged-tip', [0.25, 0.34, 0.34], [-1.65, 0.16, 0.2], ranged.accent, 0.18));
+    trim(rangedGroup, 'lantern-handle', [0.08, 0.72, 0.08], [-0.12, 0.38, 0.18], ranged.color, 0.08);
+    trim(rangedGroup, 'lantern-cage', [0.34, 0.48, 0.34], [-0.12, -0.08, 0.18], darken(ranged.color, 0.75), 0.16);
+    const glow = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.32, 0.24), new THREE.MeshBasicMaterial({ color: ranged.accent, transparent: true, opacity: 0.64 }));
+    glow.position.set(-0.12, -0.08, 0.18);
+    rangedGroup.add(glow);
   }
-  const orb = new THREE.Mesh(new THREE.SphereGeometry(0.18, 18, 12), mat(artifact.accent, 0.22, 0.2));
-  orb.position.set(0.58, 0.95, 0.42); orb.castShadow = true; gear.add(orb);
+  if (!ranged.name.includes('Bow') && !ranged.name.includes('Crossbow') && !ranged.name.includes('Staff')) rangedGroup.rotation.z = 0.22;
+  gear.add(rangedGroup);
+  if (!rangedIsPrimary) trim(gear, 'left-hand-grip', [0.24, 0.2, 0.24], [-0.88, 0.08, 0.3], photoSkin ?? look.color, 0.02);
+
+  makeArtifact(artifact, look);
   makePartner(); makeSparkles(armor.accent, artifact.accent); updateUiText();
 }
+
+function makeArtifact(artifact: Option, look: Option) {
+  const a = new THREE.Group();
+  a.position.set(1.42, -0.28, -0.02);
+  a.scale.setScalar(0.72);
+  if (artifact.name.includes('Quiver')) {
+    trim(a, 'quiver-case', [0.34, 0.95, 0.28], [0.0, 0.25, 0.0], artifact.color, 0.08).rotation.z = -0.18;
+    trim(a, 'quiver-band-top', [0.42, 0.08, 0.32], [0.0, 0.58, 0.02], artifact.accent, 0.14).rotation.z = -0.18;
+    trim(a, 'quiver-band-low', [0.42, 0.08, 0.32], [0.0, 0.12, 0.02], darken(artifact.accent, 0.72), 0.1).rotation.z = -0.18;
+    for (let i = 0; i < 5; i++) {
+      const rocket = trim(a, 'firework-rocket', [0.06, 0.76, 0.06], [-0.14 + i * 0.07, 0.88 + (i % 2) * 0.05, 0.08], artifact.accent, 0.12);
+      rocket.rotation.z = -0.18;
+      trim(a, 'rocket-cap', [0.11, 0.08, 0.08], [-0.14 + i * 0.07, 1.28 + (i % 2) * 0.05, 0.08], lighten(artifact.accent, 0.2), 0.14).rotation.z = -0.18;
+    }
+    trim(a, 'spark-fuse', [0.22, 0.08, 0.08], [0.16, 1.25, 0.12], lighten(artifact.accent, 0.18), 0.1);
+  } else if (artifact.name.includes('Totem')) {
+    trim(a, 'totem-body', [0.36, 0.62, 0.2], [0, 0.18, 0], artifact.color, 0.08);
+    trim(a, 'totem-face', [0.24, 0.2, 0.05], [0, 0.32, 0.12], artifact.accent, 0.12);
+    trim(a, 'totem-arms', [0.62, 0.12, 0.12], [0, 0.16, 0.08], darken(artifact.color, 0.72), 0.06);
+  } else if (artifact.name.includes('Boots')) {
+    trim(gear, 'boot-glow-l', [0.56, 0.08, 0.56], [-0.3, -1.9, 0.04], artifact.accent, 0.18);
+    trim(gear, 'boot-glow-r', [0.56, 0.08, 0.56], [0.3, -1.9, 0.04], artifact.accent, 0.18);
+    trim(a, 'boot-charm', [0.2, 0.28, 0.1], [0, 0.2, 0.0], artifact.color, 0.08);
+  } else {
+    trim(a, 'amulet-chain', [0.52, 0.06, 0.05], [0, 0.52, 0], 0xd8b26a, 0.24).rotation.z = -0.4;
+    trim(a, 'amulet-chain-b', [0.52, 0.06, 0.05], [0, 0.52, 0], 0xd8b26a, 0.24).rotation.z = 0.4;
+    gem(a, artifact.accent, [0, 0.22, 0.08], 1.0);
+    const light = new THREE.PointLight(artifact.accent, 1.6, 3);
+    light.position.set(0, 0.24, 0.24);
+    a.add(light);
+  }
+  gear.add(a);
+}
+
 
 function makeAlly(kind: 'rogue' | 'mage', x: number, color: number, accent: number) {
   const g = new THREE.Group();
   g.scale.setScalar(0.56);
   g.position.set(x, -0.82, -0.18);
-  g.add(cube(`${kind}-body`, [0.76, 1.05, 0.44], [0, 0.0, 0], color, 0.06));
-  g.add(cube(`${kind}-head`, [0.58, 0.56, 0.58], [0, 0.82, 0], 0xa36f52, 0.02));
-  g.add(cube(`${kind}-hood`, [0.66, 0.24, 0.66], [0, 1.14, 0], accent, 0.04));
+  trim(g, `${kind}-cloak`, [0.82, 1.16, 0.08], [0, -0.02, -0.28], darken(color, 0.55), 0.02);
+  trim(g, `${kind}-body`, [0.76, 1.05, 0.44], [0, 0.0, 0], color, 0.08);
+  trim(g, `${kind}-head`, [0.56, 0.54, 0.56], [0, 0.82, 0], 0xa36f52, 0.02);
+  trim(g, `${kind}-hood`, [0.68, 0.3, 0.68], [0, 1.1, 0], accent, 0.06);
+  trim(g, `${kind}-pauldron-l`, [0.28, 0.22, 0.42], [-0.5, 0.38, 0], accent, 0.12);
+  trim(g, `${kind}-pauldron-r`, [0.28, 0.22, 0.42], [0.5, 0.38, 0], accent, 0.12);
   if (kind === 'rogue') {
-    g.add(cube('rogue-dagger', [0.08, 0.72, 0.06], [0.55, 0.12, 0.24], 0xd7d2c6, 0.26));
+    const dagger = new THREE.Group();
+    makeBlade(dagger, 'rogue-dagger', 0, -0.12, 0.18, 0x3a2a22, 0xd7d2c6, 0.48);
+    dagger.position.set(0.48, -0.05, 0.02);
+    dagger.rotation.z = -0.55;
+    g.add(dagger);
   } else {
-    g.add(cube('mage-staff', [0.08, 1.28, 0.08], [-0.52, 0.16, 0.22], 0x5b4128, 0.08));
-    gem(g, accent, [-0.52, 0.9, 0.22], 0.7);
+    trim(g, 'mage-staff', [0.08, 1.42, 0.08], [-0.52, 0.22, 0.22], 0x5b4128, 0.08);
+    trim(g, 'mage-staff-ring', [0.36, 0.08, 0.08], [-0.52, 0.9, 0.22], accent, 0.16);
+    gem(g, accent, [-0.52, 1.05, 0.22], 0.72);
   }
   world.add(g);
   return g;
 }
-const allyRogue = makeAlly('rogue', -1.55, 0x252338, 0x6f5a8b);
-allyRogue.scale.setScalar(0.7);
-allyRogue.position.z = 0.42;
-const allyMage = makeAlly('mage', 1.55, 0x2b4050, 0x7dcfb6);
-allyMage.scale.setScalar(0.7);
-allyMage.position.z = 0.36;
+const allyRogue = makeAlly('rogue', -1.75, 0x252338, 0x6f5a8b);
+allyRogue.scale.setScalar(0.58);
+allyRogue.position.z = -0.38;
+const allyMage = makeAlly('mage', 1.75, 0x2b4050, 0x7dcfb6);
+allyMage.scale.setScalar(0.58);
+allyMage.position.z = -0.42;
 
 function makePartner() {
   const p = options.partner[state.partner];
-  partnerGroup.position.set(-1.45, -0.98, 0.92);
-  partnerGroup.add(cube('partner-body', [0.72, 0.55, 0.56], [0, 0, 0], p.color, 0.08));
-  partnerGroup.add(cube('partner-head', [0.48, 0.45, 0.45], [0.48, 0.22, 0.02], p.color, 0.08));
-  if (p.name.includes('Dragon')) {
-    partnerGroup.add(cube('wing-l', [0.12, 0.42, 0.65], [-0.28, 0.22, -0.42], p.accent));
-    partnerGroup.add(cube('wing-r', [0.12, 0.42, 0.65], [-0.28, 0.22, 0.42], p.accent));
-  } else if (p.name.includes('Robot')) {
-    gem(partnerGroup, p.accent, [0.48, 0.25, 0.25], 0.65); gem(partnerGroup, p.accent, [0.48, 0.25, -0.25], 0.65);
-  } else if (p.name.includes('Wolf')) {
-    partnerGroup.add(cube('tail', [0.5, 0.16, 0.16], [-0.55, 0.12, 0], p.accent));
-    partnerGroup.add(cube('ear-a', [0.16, 0.22, 0.12], [0.54, 0.54, 0.18], p.accent));
-    partnerGroup.add(cube('ear-b', [0.16, 0.22, 0.12], [0.54, 0.54, -0.18], p.accent));
+  partnerGroup.position.set(-3.05, -1.16, 0.38);
+  partnerGroup.scale.setScalar(1.15);
+  const saddle = darken(p.accent, 0.8);
+  if (p.name.includes('Wolf')) {
+    trim(partnerGroup, 'wolf-body', [0.92, 0.42, 0.46], [0, 0.02, 0], p.color, 0.08);
+    trim(partnerGroup, 'wolf-chest', [0.32, 0.48, 0.5], [0.42, 0.12, 0], lighten(p.color, 0.12), 0.08);
+    trim(partnerGroup, 'wolf-head', [0.46, 0.42, 0.42], [0.82, 0.24, 0], p.color, 0.08);
+    trim(partnerGroup, 'wolf-ear-a', [0.14, 0.24, 0.1], [0.9, 0.58, 0.16], p.accent, 0.06);
+    trim(partnerGroup, 'wolf-ear-b', [0.14, 0.24, 0.1], [0.9, 0.58, -0.16], p.accent, 0.06);
+    trim(partnerGroup, 'wolf-armor', [0.66, 0.18, 0.54], [0.0, 0.34, 0], saddle, 0.16);
+    trim(partnerGroup, 'wolf-helm', [0.38, 0.2, 0.3], [0.78, 0.38, 0], saddle, 0.16);
+    trim(partnerGroup, 'wolf-helm-spike', [0.09, 0.28, 0.09], [0.88, 0.62, 0], p.accent, 0.12);
+    trim(partnerGroup, 'wolf-strap', [0.08, 0.58, 0.54], [0.1, 0.22, 0], p.accent, 0.12);
+    for (const lx of [-0.28, 0.28]) {
+      trim(partnerGroup, 'wolf-leg-front', [0.14, 0.44, 0.14], [lx + 0.32, -0.22, 0.16], darken(p.color, 0.72), 0.05);
+      trim(partnerGroup, 'wolf-leg-back', [0.14, 0.44, 0.14], [lx - 0.32, -0.22, -0.16], darken(p.color, 0.72), 0.05);
+    }
+    trim(partnerGroup, 'wolf-snout', [0.28, 0.18, 0.24], [1.1, 0.2, 0], lighten(p.color, 0.16), 0.06);
+    trim(partnerGroup, 'wolf-tail', [0.48, 0.14, 0.14], [-0.62, 0.18, 0], p.color, 0.05).rotation.z = 0.35;
+  } else if (p.name.includes('Drake')) {
+    trim(partnerGroup, 'drake-body', [0.82, 0.42, 0.46], [0, 0.06, 0], p.color, 0.08);
+    trim(partnerGroup, 'drake-neck', [0.28, 0.38, 0.28], [0.52, 0.28, 0], p.color, 0.08).rotation.z = -0.25;
+    trim(partnerGroup, 'drake-head', [0.46, 0.34, 0.38], [0.82, 0.44, 0], p.color, 0.08);
+    trim(partnerGroup, 'drake-wing-l', [0.12, 0.72, 0.72], [-0.18, 0.36, -0.36], p.accent, 0.1).rotation.x = 0.5;
+    trim(partnerGroup, 'drake-wing-r', [0.12, 0.72, 0.72], [-0.18, 0.36, 0.36], p.accent, 0.1).rotation.x = -0.5;
+    trim(partnerGroup, 'drake-tail', [0.68, 0.12, 0.12], [-0.62, 0.12, 0], p.color, 0.05).rotation.z = -0.25;
+    for (const lx of [-0.24, 0.26]) trim(partnerGroup, 'drake-leg', [0.16, 0.34, 0.16], [lx, -0.18, 0.18], darken(p.color, 0.72), 0.05);
+  } else if (p.name.includes('Golem')) {
+    trim(partnerGroup, 'golem-torso', [0.72, 0.72, 0.52], [0, 0.22, 0], p.color, 0.12);
+    trim(partnerGroup, 'golem-head', [0.52, 0.42, 0.42], [0.05, 0.84, 0], lighten(p.color, 0.08), 0.12);
+    trim(partnerGroup, 'golem-arm-l', [0.24, 0.62, 0.28], [-0.52, 0.22, 0], darken(p.color, 0.8), 0.12);
+    trim(partnerGroup, 'golem-arm-r', [0.24, 0.62, 0.28], [0.52, 0.22, 0], darken(p.color, 0.8), 0.12);
+    rune(partnerGroup, p.accent, 0.05, 0.24, 0.28);
+    trim(partnerGroup, 'golem-plate', [0.48, 0.12, 0.08], [0, 0.48, 0.3], p.accent, 0.14);
   } else {
-    partnerGroup.add(cube('golem-rock', [0.32, 0.32, 0.32], [-0.4, 0.42, 0.28], p.accent));
+    trim(partnerGroup, 'bat-body', [0.38, 0.48, 0.28], [0, 0.28, 0], p.color, 0.05);
+    trim(partnerGroup, 'bat-head', [0.34, 0.3, 0.3], [0.3, 0.48, 0], p.color, 0.05);
+    trim(partnerGroup, 'bat-wing-l', [0.12, 0.72, 0.82], [-0.22, 0.3, -0.42], p.accent, 0.06).rotation.x = 0.36;
+    trim(partnerGroup, 'bat-wing-r', [0.12, 0.72, 0.82], [-0.22, 0.3, 0.42], p.accent, 0.06).rotation.x = -0.36;
+    trim(partnerGroup, 'bat-ears', [0.16, 0.22, 0.42], [0.34, 0.76, 0], p.accent, 0.05);
   }
 }
+
 function makeSparkles(a: number, b: number) {
   for (let i = 0; i < 18; i++) {
     const s = new THREE.Mesh(new THREE.OctahedronGeometry(0.035 + Math.random() * 0.045), mat(i % 2 ? a : b, 0.2, 0.25));
@@ -364,7 +536,7 @@ function averageImageColors(file: File) {
 
 document.querySelector('#randomize')!.addEventListener('click', randomize);
 document.querySelector<HTMLInputElement>('#photo-upload')!.addEventListener('change', (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) averageImageColors(file); });
-let dragging = false, lastX = 0, targetRot = -0.36, zoom = 5.55;
+let dragging = false, lastX = 0, targetRot = -0.18, zoom = 8.55;
 wrap.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; wrap.setPointerCapture(e.pointerId); });
 wrap.addEventListener('pointermove', (e) => { if (dragging) { targetRot += (e.clientX - lastX) * 0.012; lastX = e.clientX; } });
 wrap.addEventListener('pointerup', () => dragging = false);
