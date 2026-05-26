@@ -44,7 +44,7 @@ const options: Record<Slot, Option[]> = {
     { name: 'Arcane Adept', emoji: 'IV', color: 0xa77fbd, accent: 0x191322, power: { magic: 2 }, title: 'Adept' },
   ],
 };
-const state: Record<Slot, number> = { armor: 1, melee: 0, ranged: 2, partner: 0, artifact: 0, look: 0 };
+const state: Record<Slot, number> = { armor: 1, melee: 0, ranged: 0, partner: 0, artifact: 0, look: 0 };
 let photoSkin: number | null = null;
 let photoHair: number | null = null;
 
@@ -58,6 +58,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x120e0b, 8, 24);
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 camera.position.set(4.55, 3.35, 7.15);
+let autoZoom = true;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
@@ -68,8 +69,9 @@ const hero = new THREE.Group();
 const gear = new THREE.Group();
 const partnerGroup = new THREE.Group();
 const sparkleGroup = new THREE.Group();
+const loadoutGroup = new THREE.Group();
 scene.add(world);
-world.add(hero, partnerGroup, sparkleGroup);
+world.add(hero, partnerGroup, sparkleGroup, loadoutGroup);
 hero.scale.setScalar(0.92);
 hero.add(gear);
 
@@ -205,10 +207,11 @@ face.add(le, re, browL, browR, mouth);
 hero.add(face);
 
 function refreshGear() {
-  gear.clear(); partnerGroup.clear(); sparkleGroup.clear();
+  gear.clear(); partnerGroup.clear(); sparkleGroup.clear(); loadoutGroup.clear();
   const armor = options.armor[state.armor];
   const melee = options.melee[state.melee];
   const ranged = options.ranged[state.ranged];
+  const rangedName = ranged.name.toLowerCase();
   const artifact = options.artifact[state.artifact];
   const look = options.look[state.look];
 
@@ -250,7 +253,7 @@ function refreshGear() {
   makeStrap(gear, 0, 0.04, 0.44);
 
   const meleeGroup = new THREE.Group();
-  const rangedIsPrimary = ranged.name.includes('Crossbow') || ranged.name.includes('Staff');
+  const rangedIsPrimary = rangedName.includes('bow') || rangedName.includes('crossbow') || rangedName.includes('staff');
   meleeGroup.position.set(rangedIsPrimary ? 0.95 : 0.72, rangedIsPrimary ? -0.82 : 0.04, rangedIsPrimary ? -0.5 : 0.22);
   meleeGroup.rotation.z = rangedIsPrimary ? -1.08 : -0.5;
   meleeGroup.scale.setScalar(rangedIsPrimary ? 0.5 : 1);
@@ -277,16 +280,18 @@ function refreshGear() {
 
   const rangedGroup = new THREE.Group();
   rangedGroup.position.set(-0.72, 0.18, -0.04);
-  if (ranged.name.includes('Bow')) {
-    rangedGroup.position.set(-1.05, 0.12, 0.78);
-    rangedGroup.rotation.z = 0.02;
+  if (rangedName.includes('bow')) {
+    rangedGroup.position.set(-0.78, 0.32, 1.24);
+    rangedGroup.rotation.z = -0.08;
+    rangedGroup.rotation.y = -0.04;
+    rangedGroup.scale.setScalar(1.18);
     const bowMat = mat(ranged.color, 0.5, 0.08);
     const bowCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.18, 0.98, 0.0),
-      new THREE.Vector3(-0.42, 0.56, 0.0),
-      new THREE.Vector3(-0.5, 0.0, 0.0),
-      new THREE.Vector3(-0.42, -0.56, 0.0),
-      new THREE.Vector3(-0.18, -0.98, 0.0),
+      new THREE.Vector3(-0.08, 1.08, 0.0),
+      new THREE.Vector3(-0.42, 0.62, 0.0),
+      new THREE.Vector3(-0.56, 0.0, 0.0),
+      new THREE.Vector3(-0.42, -0.62, 0.0),
+      new THREE.Vector3(-0.08, -1.08, 0.0),
     ]);
     const bowMesh = new THREE.Mesh(new THREE.TubeGeometry(bowCurve, 18, 0.045, 8, false), bowMat);
     bowMesh.castShadow = true;
@@ -295,15 +300,43 @@ function refreshGear() {
     const upperTip = trim(rangedGroup, 'bow-tip-top', [0.2, 0.08, 0.1], [-0.13, 1.0, 0], ranged.accent, 0.12); upperTip.rotation.z = -0.35;
     const lowerTip = trim(rangedGroup, 'bow-tip-bottom', [0.2, 0.08, 0.1], [-0.13, -1.0, 0], ranged.accent, 0.12); lowerTip.rotation.z = 0.35;
     trim(rangedGroup, 'bow-grip', [0.18, 0.36, 0.14], [-0.5, 0.0, 0.05], ranged.accent, 0.14);
+    trim(rangedGroup, 'bow-leather-wrap-a', [0.24, 0.055, 0.16], [-0.5, 0.12, 0.11], darken(ranged.color, 0.62), 0.06);
+    trim(rangedGroup, 'bow-leather-wrap-b', [0.24, 0.055, 0.16], [-0.5, -0.12, 0.11], darken(ranged.color, 0.62), 0.06);
     const stringMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
     const string = new THREE.Mesh(new THREE.BoxGeometry(0.035, 1.92, 0.035), stringMat);
-    string.position.set(0.03, 0.0, 0.03);
+    string.position.set(0.08, 0.0, 0.08);
     rangedGroup.add(string);
-    trim(rangedGroup, 'nocked-arrow-shaft', [1.16, 0.055, 0.055], [-0.42, 0.02, 0.28], 0xd8b26a, 0.12);
-    trim(rangedGroup, 'nocked-arrow-head', [0.17, 0.14, 0.1], [0.24, 0.02, 0.28], lighten(ranged.accent, 0.2), 0.22);
-    trim(rangedGroup, 'arrow-fletch-a', [0.13, 0.06, 0.1], [-0.98, 0.1, 0.28], ranged.accent, 0.08).rotation.z = 0.5;
-    trim(rangedGroup, 'arrow-fletch-b', [0.13, 0.06, 0.1], [-0.98, -0.06, 0.28], ranged.accent, 0.08).rotation.z = -0.5;
-  } else if (ranged.name.includes('Crossbow')) {
+    trim(rangedGroup, 'nocked-arrow-shaft', [1.36, 0.06, 0.06], [-0.38, 0.02, 0.34], 0xe6c17a, 0.12);
+    trim(rangedGroup, 'nocked-arrow-head', [0.2, 0.16, 0.12], [0.36, 0.02, 0.34], lighten(ranged.accent, 0.28), 0.24);
+    trim(rangedGroup, 'arrow-fletch-a', [0.16, 0.07, 0.11], [-1.08, 0.11, 0.34], ranged.accent, 0.08).rotation.z = 0.5;
+    trim(rangedGroup, 'arrow-fletch-b', [0.16, 0.07, 0.11], [-1.08, -0.07, 0.34], ranged.accent, 0.08).rotation.z = -0.5;
+    trim(rangedGroup, 'spare-arrow-shaft-a', [0.95, 0.045, 0.045], [-0.18, -0.24, -0.08], 0xe6c17a, 0.08).rotation.z = -0.16;
+    trim(rangedGroup, 'spare-arrow-shaft-b', [0.95, 0.045, 0.045], [-0.15, -0.38, -0.08], 0xe6c17a, 0.08).rotation.z = -0.16;
+    trim(gear, 'bow-left-hand', [0.28, 0.22, 0.26], [-0.92, 0.34, 1.14], photoSkin ?? look.color, 0.02);
+    trim(gear, 'bow-right-hand', [0.28, 0.22, 0.26], [0.18, 0.2, 1.2], photoSkin ?? look.color, 0.02);
+    trim(gear, 'arrow-pull-hand', [0.24, 0.2, 0.22], [-0.18, 0.02, 1.28], photoSkin ?? look.color, 0.02);
+    const visibleBowTop = trim(gear, 'visible-longbow-top', [0.18, 1.2, 0.18], [-1.72, 0.9, 1.76], lighten(ranged.color, 0.16), 0.1);
+    visibleBowTop.rotation.z = -0.24;
+    const visibleBowBottom = trim(gear, 'visible-longbow-bottom', [0.18, 1.2, 0.18], [-1.72, -0.32, 1.76], lighten(ranged.color, 0.16), 0.1);
+    visibleBowBottom.rotation.z = 0.24;
+    trim(gear, 'visible-longbow-grip', [0.26, 0.4, 0.22], [-1.48, 0.28, 1.86], ranged.accent, 0.16);
+    trim(gear, 'visible-longbow-string', [0.045, 2.35, 0.05], [-1.26, 0.28, 1.96], 0xf8fafc, 0.0);
+    trim(gear, 'visible-longbow-arrow', [1.3, 0.07, 0.07], [-0.86, 0.28, 2.02], 0xe6c17a, 0.12);
+    trim(gear, 'visible-longbow-arrowhead', [0.18, 0.14, 0.1], [-0.26, 0.28, 2.02], lighten(ranged.accent, 0.28), 0.24);
+    const rack = new THREE.Group();
+    rack.position.set(1.82, 0.12, 1.52);
+    rack.rotation.y = 0.22;
+    rack.scale.setScalar(1.35);
+    const rackTop = trim(rack, 'showcase-longbow-top', [0.16, 1.0, 0.16], [-0.18, 0.56, 0], 0xff9d2e, 0.12);
+    rackTop.rotation.z = -0.35;
+    const rackBottom = trim(rack, 'showcase-longbow-bottom', [0.16, 1.0, 0.16], [-0.18, -0.52, 0], 0xff9d2e, 0.12);
+    rackBottom.rotation.z = 0.35;
+    trim(rack, 'showcase-longbow-string', [0.06, 1.96, 0.06], [0.24, 0.02, 0.06], 0xf8fafc, 0.0);
+    trim(rack, 'showcase-longbow-grip', [0.24, 0.36, 0.2], [-0.08, 0.02, 0.1], ranged.accent, 0.16);
+    trim(rack, 'showcase-arrow-shaft', [0.96, 0.06, 0.06], [0.0, 0.02, 0.24], 0xe6c17a, 0.1);
+    trim(rack, 'showcase-arrow-head', [0.18, 0.14, 0.1], [0.54, 0.02, 0.24], lighten(ranged.accent, 0.28), 0.24);
+    loadoutGroup.add(rack);
+  } else if (rangedName.includes('crossbow')) {
     rangedGroup.position.set(-0.04, 0.28, 0.92);
     rangedGroup.rotation.z = -0.04;
     const wood = ranged.color;
@@ -324,11 +357,11 @@ function refreshGear() {
     trim(rangedGroup, 'crossbow-trigger', [0.14, 0.28, 0.12], [0.24, -0.23, 0.34], 0x1a100b, 0.08);
     trim(gear, 'left-crossbow-hand', [0.28, 0.22, 0.26], [-0.48, 0.22, 0.94], photoSkin ?? look.color, 0.02);
     trim(gear, 'right-crossbow-hand', [0.28, 0.22, 0.26], [0.38, 0.18, 0.94], photoSkin ?? look.color, 0.02);
-  } else if (ranged.name.includes('Staff')) {
+  } else if (rangedName.includes('staff')) {
     rangedGroup.position.set(0.86, 0.1, 1.06);
     rangedGroup.rotation.z = -0.08;
     trim(rangedGroup, 'held-staff-shaft', [0.13, 2.18, 0.13], [0.0, 0.08, 0.0], ranged.color, 0.1);
-    trim(rangedGroup, 'held-staff-highlight', [0.045, 2.0, 0.04], [0.055, 0.08, 0.075], lighten(ranged.color, 0.22), 0.03);
+    trim(rangedGroup, 'held-staff-highlight', [0.045, 2.0, 0.04], [0.055, 0.08, 0.075], 0xff9d2e, 0.03);
     trim(rangedGroup, 'held-staff-butt-cap', [0.24, 0.14, 0.16], [0.0, -1.02, 0.0], darken(ranged.accent, 0.72), 0.12);
     for (const y of [-0.42, -0.18, 0.08, 0.34]) trim(rangedGroup, 'staff-leather-wrap', [0.22, 0.075, 0.16], [0.0, y, 0.02], 0x5a3322, 0.08);
     trim(rangedGroup, 'elder-oak-crown', [0.42, 0.24, 0.2], [0.0, 1.23, 0.0], darken(ranged.color, 0.66), 0.18);
@@ -351,7 +384,7 @@ function refreshGear() {
     glow.position.set(-0.12, -0.08, 0.18);
     rangedGroup.add(glow);
   }
-  if (!ranged.name.includes('Bow') && !ranged.name.includes('Crossbow') && !ranged.name.includes('Staff')) rangedGroup.rotation.z = 0.22;
+  if (!rangedName.includes('bow') && !rangedName.includes('crossbow') && !rangedName.includes('staff')) rangedGroup.rotation.z = 0.22;
   gear.add(rangedGroup);
   if (!rangedIsPrimary) trim(gear, 'left-hand-grip', [0.24, 0.2, 0.24], [-0.88, 0.08, 0.3], photoSkin ?? look.color, 0.02);
 
@@ -540,9 +573,30 @@ let dragging = false, lastX = 0, targetRot = -0.18, zoom = 8.55;
 wrap.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; wrap.setPointerCapture(e.pointerId); });
 wrap.addEventListener('pointermove', (e) => { if (dragging) { targetRot += (e.clientX - lastX) * 0.012; lastX = e.clientX; } });
 wrap.addEventListener('pointerup', () => dragging = false);
-wrap.addEventListener('wheel', (e) => { e.preventDefault(); zoom = THREE.MathUtils.clamp(zoom + e.deltaY * 0.006, 4.7, 9.5); }, { passive: false });
-function resize() { const rect = wrap.getBoundingClientRect(); camera.aspect = rect.width / rect.height; camera.updateProjectionMatrix(); renderer.setSize(rect.width, rect.height); }
+wrap.addEventListener('wheel', (e) => { e.preventDefault(); autoZoom = false; zoom = THREE.MathUtils.clamp(zoom + e.deltaY * 0.006, 4.7, 9.8); }, { passive: false });
+function updateViewportVars() {
+  const viewport = window.visualViewport;
+  const height = viewport?.height ?? window.innerHeight;
+  const width = viewport?.width ?? window.innerWidth;
+  document.documentElement.style.setProperty('--app-height', `${height}px`);
+  document.documentElement.style.setProperty('--app-width', `${width}px`);
+}
+function resize() {
+  updateViewportVars();
+  const rect = wrap.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  camera.aspect = rect.width / rect.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(rect.width, rect.height);
+  if (autoZoom) {
+    const heightZoom = Math.max(0, 620 - rect.height) * 0.0045;
+    const narrowZoom = rect.width / rect.height < 1.05 ? 0.55 : 0;
+    zoom = THREE.MathUtils.clamp(8.1 + heightZoom + narrowZoom, 7.25, 9.55);
+  }
+}
 window.addEventListener('resize', resize);
+window.visualViewport?.addEventListener('resize', resize);
+window.visualViewport?.addEventListener('scroll', resize);
 function animate(t = 0) {
   requestAnimationFrame(animate);
   hero.rotation.y = THREE.MathUtils.lerp(hero.rotation.y, targetRot, 0.085); camera.position.z = THREE.MathUtils.lerp(camera.position.z, zoom, 0.08);
